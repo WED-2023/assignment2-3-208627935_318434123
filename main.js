@@ -1,4 +1,4 @@
-require("dotenv").config();
+
 //#region express configures
 var express = require("express");
 var path = require("path");
@@ -6,7 +6,7 @@ var logger = require("morgan");
 const session = require("client-sessions");
 const DButils = require("./routes/utils/DButils");
 var cors = require('cors')
-
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 var app = express();
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
@@ -73,7 +73,7 @@ app.use(function (req, res, next) {
 });
 //#endregion
 
-// ----> For cheking that our server is alive
+// ----> For checking that our server is alive
 app.get("/alive", (req, res) => res.send("I'm alive"));
 
 // Routings

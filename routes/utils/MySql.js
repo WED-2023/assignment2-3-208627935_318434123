@@ -6,8 +6,8 @@ const config={
 connectionLimit:4,
   host: process.env.host,//"localhost"
   user: process.env.user,//"root"
-  password: "pass_root@123",
-  database:"mydb"
+  password: "amitking",
+  database:"Recipes"
 }
 const pool = new mysql.createPool(config);
 
@@ -18,6 +18,7 @@ const connection =  () => {
     console.log("MySQL pool connected: threadId " + connection.threadId);
     const query = (sql, binding) => {
       return new Promise((resolve, reject) => {
+        console.log('trying')
          connection.query(sql, binding, (err, result) => {
            if (err) reject(err);
            resolve(result);

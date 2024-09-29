@@ -1,4 +1,5 @@
 const axios = require("axios");
+const connection = require("./MySql");
 const api_domain = "https://api.spoonacular.com/recipes";
 
 
@@ -18,7 +19,13 @@ async function getRecipeInformation(recipe_id) {
     });
 }
 
-
+async function getTryRecipeInformation() {
+    return await axios.get(`https://api.spoonacular.com/recipes/complexSearch?query=pasta`, {
+        params: {
+            apiKey: process.env.spooncular_apiKey
+        }
+    });
+}
 
 async function getRecipeDetails(recipe_id) {
     let recipe_info = await getRecipeInformation(recipe_id);
@@ -52,9 +59,33 @@ async function searchRecipe(recipeName, cuisine, diet, intolerance, number, user
     return getRecipesPreview(response.data.results.map((element) => element.id), username);
 }
 
+async function createTable() {
+    try {
+
+        // Create the table
+        const query = `
+            CREATE TABLE IF NOT EXISTS recipes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+        await connection.query(query);
+
+        // Close the database connection
+        await connection.end();
+
+        console.log("Table created successfully");
+    } catch (error) {
+        console.error("Error creating table:", error);
+    }
+}
 
 
 exports.getRecipeDetails = getRecipeDetails;
+exports.getTryRecipeInformation = getTryRecipeInformation;
+exports.createTable = createTable;
 
 
 

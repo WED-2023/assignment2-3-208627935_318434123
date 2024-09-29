@@ -21,16 +21,25 @@ router.get("/search", async (req, res, next) => {
   }
 });
 
-/**
- * This path returns a full details of a recipe by its id
- */
-router.get("/:recipeId", async (req, res, next) => {
+router.get("/try", async (req, res, next) => {
   try {
-    const recipe = await recipes_utils.getRecipeDetails(req.params.recipeId);
-    res.send(recipe);
+    const results = await recipes_utils.getTryRecipeInformation();
+    res.status(200).send(results.data.results);
   } catch (error) {
     next(error);
   }
 });
+/**
+ * This path creates a new table inside the database
+ */
+router.get("/createTable", async (req, res, next) => {
+  try {
+    const result = await recipes_utils.createTable();
+    res.send(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 module.exports = router;

@@ -16,8 +16,8 @@ router.post("/Register", async (req, res, next) => {
       country: req.body.country,
       password: req.body.password,
       email: req.body.email,
-      profilePic: req.body.profilePic
-    }
+      profilePic: req.body.profilePic,
+    };
     let users = [];
     users = await DButils.execQuery("SELECT username from users");
 
@@ -59,7 +59,6 @@ router.post("/Login", async (req, res, next) => {
 
     // Set cookie
     req.session.user_id = user.user_id;
-
 
     // return cookie
     res.status(200).send({ message: "login succeeded", success: true });
