@@ -15,27 +15,27 @@ router.get("/search", async (req, res, next) => {
     const intolerance = req.query.intolerance;
     const number = req.query.number || 5;
     const results = await recipes_utils.searchRecipe(recipeName, cuisine, diet, intolerance, number);
-    res.send(results);
+    res.status(200).send(results);
   } catch (error) {
     next(error);
   }
 });
 
-router.get("/try", async (req, res, next) => {
+router.get("/random", async (req, res, next) => {
   try {
-    const results = await recipes_utils.getTryRecipeInformation();
-    res.status(200).send(results.data.results);
+    const amount = req.query.amount || 3;
+    const results = await recipes_utils.getRandomRecipes(amount);
+    res.status(200).send(results);
   } catch (error) {
     next(error);
   }
 });
-/**
- * This path creates a new table inside the database
- */
-router.get("/createTable", async (req, res, next) => {
+
+router.get("/information", async (req, res, next) => {
   try {
-    const result = await recipes_utils.createTable();
-    res.send(result);
+    const recipe_id = req.query.recipe_id;
+    const results = await recipes_utils.getRecipeDetailsById(recipe_id, false);
+    res.status(200).send(results);
   } catch (error) {
     next(error);
   }
