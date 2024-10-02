@@ -1,13 +1,15 @@
-var mysql = require('mysql');
+var mysql = require('mysql2');
 require("dotenv").config();
 
 
 const config={
-connectionLimit:4,
+
+  connectionLimit:4,
   host: process.env.host,//"localhost"
   user: process.env.user,//"root"
-  password: "amitking",
-  database:"Recipes"
+  password: process.env.DBpassword,
+  database: process.env.DBdata_base,
+  port: parseInt(process.env.DBport, 10),
 }
 const pool = new mysql.createPool(config);
 
