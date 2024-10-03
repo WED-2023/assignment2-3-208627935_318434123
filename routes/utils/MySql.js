@@ -2,11 +2,11 @@ var mysql = require('mysql2');
 require("dotenv").config();
 
 
+
 const config={
 
-  connectionLimit:4,
-  host: process.env.host,//"localhost"
-  user: process.env.user,//"root"
+  host: process.env.host,
+  user: process.env.user,
   password: process.env.DBpassword,
   database: process.env.DBdata_base,
   port: parseInt(process.env.DBport, 10),

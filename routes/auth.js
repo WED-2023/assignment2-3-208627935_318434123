@@ -18,7 +18,7 @@ router.post("/register", async (req, res, next) => {
     users = await DButils.execQuery("SELECT user_name from users");
     console.log(users)
     if ((!(user_details.username)) || (!(user_details.password)))
-      throw { status: 409, message: "missing variables" };
+      throw { status: 400, message: "missing variables, bad request!" };
     if (users.find((x) => x.user_name === user_details.username))
       throw { status: 409, message: "Username taken" };
 
@@ -36,21 +36,27 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
-router.post("/Login", async (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   try {
+    let user_details = {
+      username: req.body.username,
+      password: req.body.password,
+    };
+    console.log(user_details);
     // check that username exists
-    const users = await DButils.execQuery("SELECT username FROM users");
-    if (!users.find((x) => x.username === req.body.username))
+    const users = await DButils.execQuery(`SELECT user_name FROM users`);
+    console.log(users);
+    if (!user_details.password || !users.find((x) => x.user_name === user_details.username))
       throw { status: 401, message: "Username or Password incorrect" };
 
     // check that the password is correct
     const user = (
       await DButils.execQuery(
-        `SELECT * FROM users WHERE username = '${req.body.username}'`
+        `SELECT * FROM users WHERE user_name = '${user_details.username}'`
       )
     )[0];
-
-    if (!bcrypt.compareSync(req.body.password, user.password)) {
+    console.log(user)
+    if (!bcrypt.compareSync(user_details.password, user.password)) {
       throw { status: 401, message: "Username or Password incorrect" };
     }
 

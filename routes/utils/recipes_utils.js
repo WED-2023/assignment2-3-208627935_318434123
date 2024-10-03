@@ -32,6 +32,25 @@ async function getRecipeDetailsById(recipe_id, isPreview) {
   return mappings.getRecipeFullPreview(recipe_info.data, recipe_summary.data);
 }
 
+
+async function getRandomPreviews(recipes) {
+    return recipes.map(recipe => {
+      const { id, title, readyInMinutes, image, spoonacularScore, vegan, vegetarian, glutenFree } = recipe;
+      
+      return {
+        id: id,
+        image: image,
+        title: title,
+        readyInMinutes: readyInMinutes,
+        aggregateLikes: spoonacularScore,
+        vegetarian: vegetarian,
+        vegan: vegan,
+        glutenFree: glutenFree,
+      };
+    });
+  }
+  
+
 /*
  * API CALLS
  */
@@ -80,8 +99,11 @@ async function getRandomRecipes(amount) {
       number: amount,
       apiKey: process.env.spooncular_apiKey,
     },
+
   });
 }
+
+
 
 /**
  * EXPORTS
@@ -90,3 +112,4 @@ async function getRandomRecipes(amount) {
 exports.searchRecipe = searchRecipe;
 exports.getRecipeDetailsById = getRecipeDetailsById;
 exports.getRandomRecipes = getRandomRecipes;
+exports.getRandomPreviews = getRandomPreviews;

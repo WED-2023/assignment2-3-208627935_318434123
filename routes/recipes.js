@@ -23,13 +23,18 @@ router.get("/search", async (req, res, next) => {
 
 router.get("/random", async (req, res, next) => {
   try {
-    const amount = req.query.amount || 3;
+    console.log("trying")
+    const amount = 3;
     const results = await recipes_utils.getRandomRecipes(amount);
-    res.status(200).send(results);
+    console.log("got results", results)
+    const previews = await recipes_utils.getRandomPreviews(results.data.recipes);
+    console.log("previews are: ", previews)
+    res.status(200).send(previews);
   } catch (error) {
     next(error);
   }
 });
+
 
 router.get("/information", async (req, res, next) => {
   try {
