@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const recipes_utils = require("./utils/recipes_utils");
+const user_utils =  require("./utils/user_utils");
 
 router.get("/", (req, res) => res.send("im here"));
 
@@ -40,6 +41,26 @@ router.get("/information", async (req, res, next) => {
   try {
     const recipe_id = req.query.recipe_id;
     const results = await recipes_utils.getRecipeDetailsById(recipe_id, false);
+    res.status(200).send(results);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/full_preview", async (req, res, next) => {
+  try {
+    const recipe_id = req.query.recipe_id;
+    from_DB = await user_utils.checkIfRecipeExists(recipe_id);
+    console.log("api is: ", from_DB);
+    if (!from_DB){
+      results = await recipes_utils.getRecipeDetailsById(recipe_id, false);
+      if (results.data.status === 'failure'){
+        res.status(400).send("bad request");
+      }
+    }
+    else{
+      results = await recipes_utils.getRecipeFromDB(recipe_id, false)
+    }
     res.status(200).send(results);
   } catch (error) {
     next(error);

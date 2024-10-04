@@ -37,13 +37,13 @@ exports.execQuery = async function (query) {
           console.log('Transaction committed successfully.');
       } else {
           // If no rows were affected, roll back the transaction
-          console.log('No rows affected, rolling back the transaction.');
+        //   console.log('No rows affected, rolling back the transaction.');
           await conn.query("ROLLBACK");
       }
   } catch (err) {
       // If there's an error, roll back the transaction
       await conn.query("ROLLBACK");
-      console.log('ROLLBACK due to error in execQuery:', err); // Improved logging
+    //   console.log('ROLLBACK due to error in execQuery:', err); // Improved logging
       throw err; // Rethrow the error for further handling
   } finally {
       // Ensure the connection is released back to the pool
