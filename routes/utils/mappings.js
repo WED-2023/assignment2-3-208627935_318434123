@@ -1,5 +1,5 @@
-async function getRecipePreview(recipe_info) {
-    const { id, title, readyInMinutes, image, spoonacularScore, vegan, vegetarian, glutenFree } = recipe_info;
+async function getRecipePreview(recipeInfo, recipeSummary) {
+    const { id, title, readyInMinutes, image, spoonacularScore, vegan, vegetarian, glutenFree } = recipeInfo;
     return {
         id: id,
         image: image,
@@ -9,22 +9,23 @@ async function getRecipePreview(recipe_info) {
         vegetarian: vegetarian,
         vegan: vegan,
         glutenFree: glutenFree,
+        summary:recipeSummary.summary
     }
 }
 
-async function getRecipeFullPreview(recipe_info, recipe_summary) {
-    const { id, title, readyInMinutes, image, spoonacularScore, vegan, vegetarian, glutenFree, instructions, analyzedInstructions, extendedIngredients, servings } = recipe_info;
+async function getRecipeFullPreview(recipeInfo) {
+    const { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, instructions, analyzedInstructions, extendedIngredients, servings } = recipeInfo;
 
     return {
         id: id,
         image: image,
         title: title,
         readyInMinutes: readyInMinutes,
-        aggregateLikes: spoonacularScore,
+        aggregateLikes: aggregateLikes,
         vegetarian: vegetarian,
         vegan: vegan,
         glutenFree: glutenFree, 
-        summary: recipe_summary.summary,
+        summary: recipe_summary,
         analyzedInstructions: analyzedInstructions,
         instructions: instructions,
         extendedIngredients: extendedIngredients,

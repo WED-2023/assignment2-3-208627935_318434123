@@ -14,8 +14,8 @@ router.get("/search", async (req, res, next) => {
     const diet = req.query.diet;
     const intolerance = req.query.intolerance;
     const number = req.query.number || 5;
-    const results = await recipes_utils.searchRecipe(recipeName, cuisine, diet, intolerance, number);
-    res.status(200).send(results);
+    const searchRecipesResult = await recipes_utils.searchRecipe(recipeName, cuisine, diet, intolerance, number);
+    res.status(200).send(searchRecipesResult);
   } catch (error) {
     next(error);
   }
@@ -24,8 +24,8 @@ router.get("/search", async (req, res, next) => {
 router.get("/random", async (req, res, next) => {
   try {
     const amount = req.query.amount || 3;
-    const results = await recipes_utils.getRandomRecipes(amount);
-    res.status(200).send(results);
+    const randomRecipes = await recipes_utils.getRandomRecipes(amount);
+    res.status(200).send(randomRecipes);
   } catch (error) {
     next(error);
   }
@@ -33,7 +33,7 @@ router.get("/random", async (req, res, next) => {
 
 router.get("/information", async (req, res, next) => {
   try {
-    const recipe_id = req.query.recipe_id;
+    const recipe_id = req.query.recipeId;
     const results = await recipes_utils.getRecipeDetailsById(recipe_id, false);
     res.status(200).send(results);
   } catch (error) {

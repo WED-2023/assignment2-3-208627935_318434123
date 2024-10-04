@@ -24,12 +24,21 @@ const api_domain = "https://api.spoonacular.com/recipes";
  */
 
 async function getRecipeDetailsById(recipe_id, isPreview) {
-  const recipe_info = await getRecipeInformation(recipe_id);
-  if (isPreview) {
-    return mappings.getRecipePreview(recipe_info.data, recipe_summary.data);
+  const responseInfo = await getRecipeInformation(recipe_id);
+  if (!responseInfo) {
+    throw new Error(`response !OK: ${responseInfo}`);
   }
-  const recipe_summary = await getRecipeSummary(recipe_id);
-  return mappings.getRecipeFullPreview(recipe_info.data, recipe_summary.data);
+  const recipeInfo = responseInfo.data;
+  if (isPreview) {
+    const responseSummary = await getRecipeSummary(recipe_id);
+    if (!responseSummary) {
+      throw new Error(`response !OK: ${responseSummary}`);
+    }
+    const recipeSummary = responseSummary.data;
+    return mappings.getRecipePreview(recipeInfo, recipeSummary);
+  }
+
+  return mappings.getRecipeFullPreview(recipeInfo);
 }
 
 /*
@@ -66,21 +75,40 @@ async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
   if (!response) {
     throw new Error("response !OK");
   }
-  const recipes = response.data;
+  const recipes = response.data.results;
   let recipesPreview = [];
-  recipes.forEach(async (recipe) => {
-    recipesPreview.push(await getRecipeDetailsById(recipe.data.id, true));
-  });
+  for (const recipe of recipes) {
+    recipesPreview.push(await getRecipeDetailsById(recipe.id, true));
+  }
+  // TODO add isFavorite to each recipe
   return recipes;
 }
 
 async function getRandomRecipes(amount) {
-  return await axios.get(`${api_domain}/random`, {
+  let randomRecipes = [];
+  const randomRecipesResponse = await axios.get(`${api_domain}/random`, {
     params: {
       number: amount,
       apiKey: process.env.spooncular_apiKey,
     },
   });
+
+  if (!randomRecipesResponse) {
+    throw new Error(`response !OK: ${randomRecipesResponse}`);
+  }
+  const randomRecipesInfo = randomRecipesResponse.data.recipes;
+  for (const recipeInfo of randomRecipesInfo) {
+    const responseSummary = await getRecipeSummary(recipeInfo.id);
+
+    if (!responseSummary) {
+      throw new Error(`response !OK: ${responseSummary}`);
+    }
+
+    const recipeSummary = responseSummary.data;
+    const recipePreview = await mappings.getRecipePreview(recipeInfo, recipeSummary);
+    randomRecipes.push(recipePreview);
+  }
+  return randomRecipes;
 }
 
 /**
