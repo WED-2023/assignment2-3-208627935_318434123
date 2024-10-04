@@ -5,6 +5,7 @@ var path = require("path");
 var logger = require("morgan");
 const session = require("client-sessions");
 const DButils = require("./routes/utils/DButils");
+const bodyParser = require('body-parser');
 var cors = require('cors')
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 var app = express();
@@ -23,6 +24,10 @@ app.use(
     //the session will be extended by activeDuration milliseconds
   })
 );
+
+
+
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, "../assignment2-1-208627935_318434123/dist"))); //To serve static files such as images, CSS files, and JavaScript files
 //local:
@@ -77,9 +82,9 @@ app.use(function (req, res, next) {
 app.get("/alive", (req, res) => res.send("I'm alive"));
 
 // Routings
-app.use("/users", user);
+app.use("/user", user);
 app.use("/recipes", recipes);
-app.use(auth);
+app.use("/auth", auth);
 
 // Default router
 app.use(function (err, req, res, next) {
