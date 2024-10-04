@@ -7,14 +7,23 @@ async function markAsFavorite(user_id, recipe_id) {
   );
 }
 
-async function getFavoriteRecipes(user_id) {
+async function getFavoriteRecipes(userId) {
   let recipes = [];
-  const recipesIds = await DButils.execQuery(
-    `select recipe_id from favorite_recipes where user_id='${user_id}'`
+  let recipe;
+  const queryResults = await DButils.execQuery(
+    `SELECT recipe_id, api FROM favorite_recipes WHERE user_id = '${userId}'`
   );
-  recipesIds.forEach(async (recipeId) => {
-    recipes.push(await recipes_utils.getRecipeDetailsById(recipeId, true));
-  });
+  for (const result of queryResults) {
+    const recipeId = result.recipe_id;
+    if (result.api) {
+      recipe = await recipes_utils.getRecipeDetailsById(recipeId, true);
+    } else {
+      recipe = await DButils.execQuery(
+        `SELECT * FROM recipes WHERE recipes_id = '${recipeId}'`
+      );
+    }
+  }
+
   return recipes;
 }
 
@@ -26,7 +35,7 @@ async function getMyRecipes(user_id) {
   );
   recipesIds.forEach(async (recipeId) => {
     if (isAPI) {
-    // TODO understand what I get from DB
+      // TODO understand what I get from DB
       recipe = await DButils.execQuery(
         `select * from recipes where recipes_id='${recipeId}'`
       );
