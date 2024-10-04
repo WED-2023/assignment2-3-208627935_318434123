@@ -2,7 +2,7 @@ const axios = require("axios");
 const connection = require("./MySql");
 const mappings = require("./mappings");
 const api_domain = "https://api.spoonacular.com/recipes";
-const DButils = require("./DButils") 
+const DButils = require("./DButils");
 
 //@TODO CHECK ALL API CALLS, NOTHING IS CHECK. MAYBE RESPONSE.DATA.RESULTS?
 
@@ -23,19 +23,19 @@ const DButils = require("./DButils")
 /**
  * UTILS
  */
-async function getRecipeFromDB(recipe_id, isPreview){
-  console.log("isPreview value:", isPreview); 
-  if (isPreview === true){
+async function getRecipeFromDB(recipe_id, isPreview) {
+  if (isPreview) {
+    console.log("Preview");
     const recipe = await DButils.execQuery(
       `SELECT title, image_url, time_in_minutes, vegetarian, vegan, gluten_free from recipes where recipe_id='${recipe_id}'`
     );
-    console.log(recipe)
+    console.log(recipe);
     const likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
-    console.log(likes)
-    if (!likes){
-      likes = [{likes:0}]
+    console.log(likes);
+    if (!likes) {
+      likes = [{ likes: 0 }];
     }
     return {
       id: recipe_id,
@@ -46,20 +46,19 @@ async function getRecipeFromDB(recipe_id, isPreview){
       vegetarian: recipe[0].vegetarian,
       vegan: recipe[0].vegan,
       glutenFree: recipe[0].gluten_free,
-    }
-  }
-  else{
-    console.log("False Full preview")
+    };
+  } else {
+    console.log("Full Details");
     const recipe = await DButils.execQuery(
       `SELECT * from recipes where recipe_id='${recipe_id}'`
     );
-    console.log(recipe)
+    console.log(recipe);
     const likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
-    console.log(likes)
-    if (!likes){
-      likes = [{likes:0}]
+    console.log(likes);
+    if (!likes) {
+      likes = [{ likes: 0 }];
     }
 
     // Fetch the ingredients for this recipe
@@ -67,73 +66,63 @@ async function getRecipeFromDB(recipe_id, isPreview){
 
     // Combine the recipe and ingredients into one object
     const recipeWithIngredients = {
-        ...recipe["0"],
-        likes: likes[0].likes,
-        ingredients: ingredients // Attach the ingredients here
+      ...recipe["0"],
+      likes: likes[0].likes,
+      ingredients: ingredients, // Attach the ingredients here
     };
 
-    return recipeWithIngredients
+    return recipeWithIngredients;
   }
 }
 async function getIngredientsByRecipeId(recipeId) {
   const ingredients = await DButils.execQuery(
-      `SELECT ingredient_name, amount, unit FROM recipes_ingredients WHERE recipe_id = ${recipeId}`
+    `SELECT ingredient_name, amount, unit FROM recipes_ingredients WHERE recipe_id = ${recipeId}`
   );
-  return ingredients.map(ingredient => ({
-      ingredient_name: ingredient.ingredient_name,
-      amount: ingredient.amount,
-      unit: ingredient.unit
+  return ingredients.map((ingredient) => ({
+    ingredient_name: ingredient.ingredient_name,
+    amount: ingredient.amount,
+    unit: ingredient.unit,
   }));
 }
 
 async function getRecipeDetailsById(recipe_id, isPreview) {
   const recipe_info = await getRecipeInformation(recipe_id);
-  const recipe_summary = await getRecipeSummary(recipe_id);
+  const recipeSummary = await getRecipeSummary(recipe_id);
+
   if (isPreview) {
-    return mappings.getRecipePreview(recipe_info.data, recipe_summary.data);
+    return mappings.getRecipePreview(recipe_info, recipeSummary);
   }
-  
-  return mappings.getRecipeFullPreview(recipe_info.data, recipe_summary.data);
+
+  return mappings.getRecipeFullPreview(recipe_info, recipeSummary);
 }
-
-
-async function getRandomPreviews(recipes) {
-    return recipes.map(recipe => {
-      const { id, title, readyInMinutes, image, spoonacularScore, vegan, vegetarian, glutenFree } = recipe;
-      
-      return {
-        id: id,
-        image: image,
-        title: title,
-        readyInMinutes: readyInMinutes,
-        aggregateLikes: spoonacularScore,
-        vegetarian: vegetarian,
-        vegan: vegan,
-        glutenFree: glutenFree,
-      };
-    });
-  }
-  
 
 /*
  * API CALLS
  */
 
 async function getRecipeInformation(recipe_id) {
-  return await axios.get(`${api_domain}/${recipe_id}/information`, {
+  const response = await axios.get(`${api_domain}/${recipe_id}/information`, {
     params: {
       includeNutrition: false,
       apiKey: process.env.spooncular_apiKey,
     },
   });
+  if (!response) {
+    throw new Error("response !OK");
+  }
+  return response.data;
 }
 
 async function getRecipeSummary(recipe_id) {
-  return await axios.get(`${api_domain}/${recipe_id}/summary`, {
+  const response = await axios.get(`${api_domain}/${recipe_id}/summary`, {
     params: {
       apiKey: process.env.spooncular_apiKey,
     },
   });
+  if (!response) {
+    throw new Error("response !OK");
+  }
+  return response.data.summary;
 }
 
 async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
@@ -151,12 +140,12 @@ async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
   }
 
   const recipes = response.data.results;
-  
-  if (!recipes){
-    return []
+
+  if (!recipes) {
+    return [];
   }
   let recipesPreview = [];
-  for (const recipe of recipes){
+  for (const recipe of recipes) {
     recipesPreview.push(await getRecipeDetailsById(recipe.id, true));
   }
 
@@ -164,17 +153,34 @@ async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
 }
 
 async function getRandomRecipes(amount) {
-  let randomRecipes = [];
   const randomRecipesResponse = await axios.get(`${api_domain}/random`, {
     params: {
       number: amount,
       apiKey: process.env.spooncular_apiKey,
     },
-
   });
+  if (!randomRecipesResponse) {
+    throw new Error("response !OK");
+  }
+  return randomRecipesResponse.data.recipes;
 }
 
+async function getRandomPreviews(recipes) {
+  const addedSummary = await Promise.all(
+    recipes.map(async (recipe) => {
+      recipe.summary = await getRecipeSummary(recipe.id);
+      return recipe;
+    })
+  );
 
+  const recipesPreview = await Promise.all(
+    addedSummary.map((recipe) => {
+      return mappings.getRecipePreview(recipe, recipe.summary);
+    })
+  );
+
+  return recipesPreview;
+}
 
 /**
  * EXPORTS

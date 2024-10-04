@@ -13,7 +13,7 @@ async function getRecipePreview(recipeInfo, recipeSummary) {
     }
 }
 
-async function getRecipeFullPreview(recipeInfo) {
+async function getRecipeFullPreview(recipeInfo, recipeSummary) {
     const { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, instructions, analyzedInstructions, extendedIngredients, servings } = recipeInfo;
 
     return {
@@ -25,7 +25,7 @@ async function getRecipeFullPreview(recipeInfo) {
         vegetarian: vegetarian,
         vegan: vegan,
         glutenFree: glutenFree, 
-        summary: recipe_summary,
+        summary: recipeSummary,
         analyzedInstructions: analyzedInstructions,
         instructions: instructions,
         extendedIngredients: extendedIngredients,
