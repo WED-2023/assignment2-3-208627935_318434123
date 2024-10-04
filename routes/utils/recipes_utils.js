@@ -125,6 +125,7 @@ async function getRecipeSummary(recipe_id) {
   return response.data.summary;
 }
 
+
 async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
   const params = {
     query: recipeName,
@@ -140,7 +141,7 @@ async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
   }
 
   const recipes = response.data.results;
-
+  console.log(recipes)
   if (!recipes) {
     return [];
   }
