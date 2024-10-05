@@ -3,7 +3,7 @@ const connection = require("./MySql");
 const mappings = require("./mappings");
 const api_domain = "https://api.spoonacular.com/recipes";
 const DButils = require("./DButils");
-const user_utils = require(".user_utils");
+const user_utils = require("./user_utils");
 //@TODO CHECK ALL API CALLS, NOTHING IS CHECK. MAYBE RESPONSE.DATA.RESULTS?
 
 // my_recipes = server.getUserRecipes(user_id)
