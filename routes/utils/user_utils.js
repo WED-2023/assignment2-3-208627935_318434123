@@ -1,14 +1,18 @@
 const DButils = require("./DButils");
 const recipes_utils = require("./recipes_utils");
 
-
-async function in_favorites(recipe_id){
+async function how_many_favorites(recipe_id){
+  const result = await DButils.execQuery(
+    `SELECT * FROM favorite_recipes WHERE recipe_id = ${recipe_id}`
+  ); 
+  return result.length; // Recipe exists
+}
+async function is_favorite(user_name, recipe_id){
   try {
-    const username = req.session.username;
     const result = await DButils.execQuery(
-      `SELECT * FROM favorite_recipes WHERE user_name = ${username} AND recipe_id = ${recipe_id}`
+      `SELECT * FROM favorite_recipes WHERE user_name =${user_name} AND recipe_id = ${recipe_id};`
     ); 
-    return result.length; // Recipe exists
+    return result.length > 0; // Recipe exists
 
   } catch (error) {
     console.error("Error querying the database:", error);
@@ -103,7 +107,7 @@ async function getMyRecipesPreview(user_id) {
     const recipeId = row.recipe_id;
 
     // Fetch each recipe and await the result
-    const recipe = await recipes_utils.getRecipeFromDB(recipeId, true);
+    const recipe = await recipes_utils.getRecipeFromDB(user_id, recipeId, true);
     recipes.push(recipe);
   }
   console.log("all recipes: ", recipes);
@@ -174,5 +178,6 @@ exports.addNewRecipes = addNewRecipes;
 exports.getMyRecipesPreview = getMyRecipesPreview;
 exports.getMyRecipesFullPreview = getMyRecipesFullPreview;
 exports.checkIfRecipeExists = checkIfRecipeExists;
-exports.in_favorites = in_favorites;
+exports.is_favorite = is_favorite;
 exports.delete_favorite = delete_favorite;
+exports.how_many_favorites = how_many_favorites;
