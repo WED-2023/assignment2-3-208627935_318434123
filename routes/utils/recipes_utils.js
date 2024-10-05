@@ -37,7 +37,7 @@ async function getRecipeFromDB(recipe_id, isPreview) {
     if (!likes) {
       likes = [{ likes: 0 }];
     }
-    return mappings.getRecipePreviewDB(recipe[0], likes[0].likes);
+    return mappings.getRecipePreviewDB(recipe_id, recipe[0], likes[0].likes);
   } else {
     console.log("Full Details");
     const recipe = await DButils.execQuery(
@@ -56,6 +56,7 @@ async function getRecipeFromDB(recipe_id, isPreview) {
     const ingredients = await getIngredientsByRecipeId(recipe_id);
 
     const recipeWithIngredients = await mappings.getRecipeFullPreviewDB(
+      recipe_id,
       recipe[0],
       ingredients,
       likes[0].likes
@@ -78,7 +79,7 @@ async function getIngredientsByRecipeId(recipeId) {
 async function getRecipeDetailsById(recipe_id, isPreview) {
   const recipe_info = await getRecipeInformation(recipe_id);
   const recipeSummary = await getRecipeSummary(recipe_id);
-  const isFavorite = user_utils.in_favorites(recipe_info.recipeId);
+  const isFavorite = user_utils.in_favorites(recipe_id);
   if (isFavorite) {
     recipe_info.aggregateLikes += 1;
   }
