@@ -55,21 +55,13 @@ router.post("/login", async (req, res, next) => {
         `SELECT * FROM users WHERE user_name = '${user_details.username}'`
       )
     )[0];
-    console.log(user)
+  
     if (!bcrypt.compareSync(user_details.password, user.password)) {
       throw { status: 401, message: "Username or Password incorrect" };
     }
 
-    // Generate JWT Token
-    const token = jwt.sign(
-      { username: user_details.username }, // Payload
-      process.env.SECRET_KEY, // Secret key
-      { expiresIn: '1h' } // Options, e.g., token expires in 1 hour
-    );
-
-    // TODO still not sure this is being set properly
-    // Send the token as a cookie
-    res.cookie('authToken', token, { httpOnly: true, secure: true }); // Secure: true, only sends over HTTPS
+    // establish username for session
+    req.session.username = user.user_name
 
     // return cookie
     res.status(200).send({ message: "login succeeded", success: true });
