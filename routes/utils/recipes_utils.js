@@ -81,6 +81,7 @@ async function getRecipeDetailsById(recipe_id, isPreview) {
 
   const num_of_likes = user_utils.in_favorites(recipe_info.recipeId)
   if (num_of_likes > 0){
+    isFavorite = true
     recipe_info.aggregateLikes += num_of_likes
   } 
 
