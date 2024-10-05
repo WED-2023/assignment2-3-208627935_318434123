@@ -1,6 +1,27 @@
 const DButils = require("./DButils");
 const recipes_utils = require("./recipes_utils");
 
+
+async function in_favorites(recipe_id){
+  try {
+    const result = await DButils.execQuery(
+      `SELECT * FROM favorite_recipes WHERE recipe_id = ${recipe_id}`
+    );
+
+    // Ensure result.rows is defined and is an array
+    if (result.length > 0) {
+      console.log(`Recipe with id ${recipe_id} exists`);
+      return true; // Recipe exists
+    } else {
+      console.log(`Recipe with id ${recipe_id} does not exist`);
+      return false; // Recipe doesn't exist
+    }
+  } catch (error) {
+    console.error("Error querying the database:", error);
+    throw error;
+  }
+}
+
 async function checkIfRecipeExists(recipe_id) {
   try {
     const result = await DButils.execQuery(
@@ -21,7 +42,14 @@ async function checkIfRecipeExists(recipe_id) {
     throw error;
   }
 }
+async function delete_favorite(user_name, recipe_id){
 
+  query = `DELETE FROM favorite_recipes 
+        WHERE user_name = '${user_name}' 
+          AND recipe_id = ${recipe_id};`
+
+  await DButils.execQuery(query);
+}
 async function markAsFavorite(user_id, recipe_id) {
   const exists = await checkIfRecipeExists(recipe_id);
   api_or_not = !exists;
@@ -152,3 +180,5 @@ exports.addNewRecipes = addNewRecipes;
 exports.getMyRecipesPreview = getMyRecipesPreview;
 exports.getMyRecipesFullPreview = getMyRecipesFullPreview;
 exports.checkIfRecipeExists = checkIfRecipeExists;
+exports.in_favorites = in_favorites;
+exports.delete_favorite = delete_favorite;

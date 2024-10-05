@@ -25,12 +25,18 @@ router.use(async function (req, res, next) {
 /**
  * This path gets body with recipeId and save this recipe in the favorites list of the logged-in user
  */
-router.post('/favorites', async (req,res,next) => {
+router.post('/toggle_favorite', async (req,res,next) => {
   try{
-    const username = req.session.username;
+    
     // const user_id = req.body.username;
+    const username = req.session.username;
+    const is_favorite = req.body.isFavorite;
     const recipe_id = req.body.recipe_id;
-    await user_utils.markAsFavorite(username,recipe_id);
+    if (is_favorite){
+      await user_utils.markAsFavorite(username,recipe_id);
+    }else{
+      await user_utils.delete_favorite(user_name, recipe_id);
+    }
     res.status(200).send("The Recipe successfully saved as favorite");
     } catch(error){
     next(error);
@@ -72,27 +78,27 @@ router.get('/MyRecipes/preview', async (req,res,next) => {
     next(error); 
   }
 });
-router.get('/MyRecipes/full_preview', async (req,res,next) => {
-  try{
-    const username = req.session.username;
-    // const user_name = req.body.username;
-    recipes = await user_utils.getMyRecipesFullPreview(username);
-    res.status(200).send(recipes);
-  } catch(error){
-    next(error); 
-  }
-});
-router.get('/favorites/full_preview', async (req,res,next) => {
-  try{
-    const username = req.session.username;
-    // const user_name = req.body.username;
-    let favorite_recipes = {};
-    const recipes = await user_utils.getFavoriteRecipes(username, false);
-    res.status(200).send(recipes);
-  } catch(error){
-    next(error); 
-  }
-});
+// router.get('/MyRecipes/full_preview', async (req,res,next) => {
+//   try{
+//     const username = req.session.username;
+//     // const user_name = req.body.username;
+//     recipes = await user_utils.getMyRecipesFullPreview(username);
+//     res.status(200).send(recipes);
+//   } catch(error){
+//     next(error); 
+//   }
+// });
+// router.get('/favorites/full_preview', async (req,res,next) => {
+//   try{
+//     const username = req.session.username;
+//     // const user_name = req.body.username;
+//     let favorite_recipes = {};
+//     const recipes = await user_utils.getFavoriteRecipes(username, false);
+//     res.status(200).send(recipes);
+//   } catch(error){
+//     next(error); 
+//   }
+// });
 
 
 
