@@ -15,6 +15,7 @@ async function getRecipePreview(recipeInfo, recipeSummary) {
 
 async function getRecipeFullPreview(recipeInfo, recipeSummary) {
     const { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, instructions, analyzedInstructions, extendedIngredients, servings } = recipeInfo;
+    
     console.log("instrucstion:", instructions)
     console.log("analyzedInstructions", analyzedInstructions)
     return {

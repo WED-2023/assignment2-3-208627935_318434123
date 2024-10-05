@@ -79,10 +79,12 @@ async function getIngredientsByRecipeId(recipeId) {
 async function getRecipeDetailsById(recipe_id, isPreview) {
   const recipe_info = await getRecipeInformation(recipe_id);
   const recipeSummary = await getRecipeSummary(recipe_id);
-  const isFavorite = user_utils.in_favorites(recipe_id);
-  if (isFavorite) {
-    recipe_info.aggregateLikes += 1;
-  }
+
+  const num_of_likes = user_utils.in_favorites(recipe_info.recipeId)
+  if (num_of_likes > 0){
+    isFavorite = true
+    recipe_info.aggregateLikes += num_of_likes
+  } 
 
   if (isPreview) {
     const recipe = mappings.getRecipePreview(recipe_info, recipeSummary);

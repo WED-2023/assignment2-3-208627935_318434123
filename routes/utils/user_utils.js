@@ -4,18 +4,12 @@ const recipes_utils = require("./recipes_utils");
 
 async function in_favorites(recipe_id){
   try {
+    const username = req.session.username;
     const result = await DButils.execQuery(
-      `SELECT * FROM favorite_recipes WHERE recipe_id = ${recipe_id}`
-    );
+      `SELECT * FROM favorite_recipes WHERE user_name = ${username} AND recipe_id = ${recipe_id}`
+    ); 
+    return result.length; // Recipe exists
 
-    // Ensure result.rows is defined and is an array
-    if (result.length > 0) {
-      console.log(`Recipe with id ${recipe_id} exists`);
-      return true; // Recipe exists
-    } else {
-      console.log(`Recipe with id ${recipe_id} does not exist`);
-      return false; // Recipe doesn't exist
-    }
   } catch (error) {
     console.error("Error querying the database:", error);
     throw error;
