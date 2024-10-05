@@ -37,16 +37,7 @@ async function getRecipeFromDB(recipe_id, isPreview) {
     if (!likes) {
       likes = [{ likes: 0 }];
     }
-    return {
-      id: recipe_id,
-      image: recipe[0].image_url,
-      title: recipe[0].title,
-      readyInMinutes: recipe[0].time_in_minutes,
-      aggregateLikes: likes[0].likes,
-      vegetarian: recipe[0].vegetarian,
-      vegan: recipe[0].vegan,
-      glutenFree: recipe[0].gluten_free,
-    };
+    return mappings.getRecipePreviewDB(recipe[0], likes[0].likes);
   } else {
     console.log("Full Details");
     const recipe = await DButils.execQuery(
@@ -64,12 +55,11 @@ async function getRecipeFromDB(recipe_id, isPreview) {
     // Fetch the ingredients for this recipe
     const ingredients = await getIngredientsByRecipeId(recipe_id);
 
-    // Combine the recipe and ingredients into one object
-    const recipeWithIngredients = {
-      ...recipe["0"],
-      likes: likes[0].likes,
-      ingredients: ingredients, // Attach the ingredients here
-    };
+    const recipeWithIngredients = await mappings.getRecipeFullPreviewDB(
+      recipe[0],
+      ingredients,
+      likes[0].likes
+    );
 
     return recipeWithIngredients;
   }
@@ -88,15 +78,15 @@ async function getIngredientsByRecipeId(recipeId) {
 async function getRecipeDetailsById(recipe_id, isPreview) {
   const recipe_info = await getRecipeInformation(recipe_id);
   const recipeSummary = await getRecipeSummary(recipe_id);
-  const isFavorite = user_utils.in_favorites(recipe_info.recipeId)
-  if (isFavorite){
-    recipe_info.aggregateLikes += 1
-  } 
+  const isFavorite = user_utils.in_favorites(recipe_info.recipeId);
+  if (isFavorite) {
+    recipe_info.aggregateLikes += 1;
+  }
 
   if (isPreview) {
     const recipe = mappings.getRecipePreview(recipe_info, recipeSummary);
-    recipe.isFavorite = isFavorite
-    return recipe
+    recipe.isFavorite = isFavorite;
+    return recipe;
   }
 
   return mappings.getRecipeFullPreview(recipe_info, recipeSummary);
@@ -131,7 +121,6 @@ async function getRecipeSummary(recipe_id) {
   return response.data.summary;
 }
 
-
 async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
   const params = {
     query: recipeName,
@@ -147,7 +136,7 @@ async function searchRecipe(recipeName, cuisine, diet, intolerance, number) {
   }
 
   const recipes = response.data.results;
-  console.log(recipes)
+  console.log(recipes);
   if (!recipes) {
     return [];
   }
