@@ -35,5 +35,42 @@ async function getRecipeFullPreview(recipeInfo, recipeSummary) {
     }
 }
 
+async function getRecipeFullPreviewDB(recipeId, recipeFromDB, ingredientsFromDB, likesFromDB) {
+    const { title, time_in_minutes, image_url, vegan, vegetarian, gluten_free, instructions, servings } = recipeFromDB;
+    const analyzedInstructions = await mapInstructions(instructions);
+    return {
+        id: recipeId,
+        image: image_url,
+        title: title,
+        readyInMinutes: time_in_minutes,
+        aggregateLikes: likesFromDB,
+        vegetarian: vegetarian,
+        vegan: vegan,
+        glutenFree: gluten_free, 
+        instructions: instructions,
+        analyzedInstructions: [],
+        extendedIngredients: ingredientsFromDB,
+        servings: servings,
+    }
+}
+
+async function getRecipePreviewDB(recipeId, recipeFromDB, likesFromDB) {
+    const { title, time_in_minutes, image_url, vegan, vegetarian, gluten_free} = recipeFromDB;
+    return {
+        id: recipeId,
+        image: image_url,
+        title: title,
+        readyInMinutes: time_in_minutes,
+        aggregateLikes: likesFromDB,
+        vegetarian: vegetarian,
+        vegan: vegan,
+        glutenFree: gluten_free,
+      };
+}
+
+async function mapInstructions(instructions){}
+
 exports.getRecipePreview = getRecipePreview;
 exports.getRecipeFullPreview = getRecipeFullPreview;
+exports.getRecipeFullPreviewDB = getRecipeFullPreviewDB;
+exports.getRecipePreviewDB = getRecipePreviewDB;
