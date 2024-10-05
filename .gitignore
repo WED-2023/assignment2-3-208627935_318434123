@@ -1,6 +1,7 @@
 *.pptx
 node_modules
 .env
+index.js
 package-lock.json 
 package.json
 chain.pem

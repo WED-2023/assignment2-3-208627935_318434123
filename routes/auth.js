@@ -3,13 +3,14 @@ var router = express.Router();
 const MySql = require("../routes/utils/MySql");
 const DButils = require("../routes/utils/DButils");
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+
 
 router.post("/register", async (req, res, next) => {
   try {
     // parameters exists
     // valid parameters
     // username exists
-    console.log("request body", req.body)
     let user_details = {
       username: req.body.username,
       password: req.body.password,
@@ -17,7 +18,7 @@ router.post("/register", async (req, res, next) => {
     let users = [];
     users = await DButils.execQuery("SELECT user_name from users");
     console.log(users)
-    if ((!(user_details.username)) || (!(user_details.password)))
+    if (!user_details.username || !user_details.password)
       throw { status: 400, message: "missing variables, bad request!" };
     if (users.find((x) => x.user_name === user_details.username))
       throw { status: 409, message: "Username taken" };
@@ -25,7 +26,6 @@ router.post("/register", async (req, res, next) => {
     // add the new username
     let hash_password = bcrypt.hashSync(user_details.password, parseInt(process.env.bcrypt_saltRounds));
 
-    console.log(`INSERT INTO users VALUES ('${user_details.username}', '${hash_password}')`)
     const result = await DButils.execQuery(
       `INSERT INTO users (user_name, password) VALUES ('${user_details.username}','${hash_password}')`
     );
@@ -60,8 +60,16 @@ router.post("/login", async (req, res, next) => {
       throw { status: 401, message: "Username or Password incorrect" };
     }
 
-    // Set cookie
-    req.session.user_id = user.user_id;
+    // Generate JWT Token
+    const token = jwt.sign(
+      { username: user_details.username }, // Payload
+      process.env.SECRET_KEY, // Secret key
+      { expiresIn: '1h' } // Options, e.g., token expires in 1 hour
+    );
+
+    // TODO still not sure this is being set properly
+    // Send the token as a cookie
+    res.cookie('authToken', token, { httpOnly: true, secure: true }); // Secure: true, only sends over HTTPS
 
     // return cookie
     res.status(200).send({ message: "login succeeded", success: true });
