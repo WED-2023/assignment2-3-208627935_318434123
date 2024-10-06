@@ -144,8 +144,8 @@ const getLargestRecipeId = async function () {
 };
 
 const addToRecipes = async function (recipe_id, recipe) {
-  const recipes_query = `INSERT INTO recipes (recipe_id, title, time_in_minutes, image_url, vegetarian, vegan, gluten_free, summary, instructions, servings) 
-  VALUES (${recipe_id}, '${recipe.title}', ${recipe.time}, '${recipe.image}', ${recipe.vegetarian}, ${recipe.vegan}, ${recipe.gluten_free}, '${recipe.summary}', '${recipe.instructions}', ${recipe.servings})`;
+  const recipes_query = `INSERT INTO recipes (recipe_id, title, time_in_minutes, image_url, vegetarian, vegan, gluten_free, summary, instructions, servings, extendedIngredients, analyzedInstructions) 
+  VALUES (${recipe_id}, '${recipe.title}', ${recipe.time}, '${recipe.image}', ${recipe.vegetarian}, ${recipe.vegan}, ${recipe.gluten_free}, '${recipe.summary}', '${recipe.instructions}', ${recipe.servings}, '${JSON.stringify(recipe.extendedIngredients)}', '${JSON.stringify(recipe.analyzedInstructions)}')`;
   await DButils.execQuery(recipes_query);
   console.log("add to recipes");
 };
