@@ -38,17 +38,6 @@ router.get("/random", async (req, res, next) => {
   }
 });
 
-
-// router.get("/information", async (req, res, next) => {
-//   try {
-//     const recipe_id = req.query.recipeId;
-//     const results = await recipes_utils.getRecipeDetailsById(recipe_id, false);
-//     res.status(200).send(results);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
 router.get("/full_preview", async (req, res, next) => {
   let recipeFullPreview;
   try {

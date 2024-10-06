@@ -69,13 +69,14 @@ async function getRecipePreviewDB(recipeId, recipeFromDB, likesFromDB, favorite)
       };
 }
 
-export async function mapRecipe(recipe, recipeId){
+async function mapRecipeCreated(recipe, recipeId, recipeUserName){
     if(!recipe.analyzedInstructions){
         recipe.analyzedInstructions = [];
     }   
     recipe.extendedIngredients = await mapIngredients(recipe.extendedIngredients);
-    const { title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, instructions, analyzedInstructions, extendedIngredients, servings } = recipe;
+    const { title, readyInMinutes, summary, image, aggregateLikes, vegan, vegetarian, glutenFree, instructions, analyzedInstructions, extendedIngredients, servings } = recipe;
     return {
+        user_name:recipeUserName,
         id: recipeId,
         image: image,
         title: title,
@@ -84,7 +85,7 @@ export async function mapRecipe(recipe, recipeId){
         vegetarian: vegetarian,
         vegan: vegan,
         glutenFree: glutenFree, 
-        summary: recipeSummary,
+        summary: summary,
         analyzedInstructions: analyzedInstructions,
         instructions: instructions,
         extendedIngredients: extendedIngredients,
@@ -100,10 +101,10 @@ async function mapIngredients(ingredients){
             aisle: "", // Default empty
             image: "", // Default empty
             consistency: "", // Default empty
-            name: ingredient.ingredient_name,
+            name: ingredient.name,
             nameClean: "", // Default empty
-            original: `${ingredient.amount} ${ingredient.unit} ${ingredient.ingredient_name}`,
-            originalName: ingredient.ingredient_name,
+            original: `${ingredient.amount} ${ingredient.unit} ${ingredient.name}`,
+            originalName: ingredient.name,
             amount: ingredient.amount,
             unit: ingredient.unit,
             meta: [], // Default empty
@@ -129,3 +130,4 @@ exports.getRecipePreview = getRecipePreview;
 exports.getRecipeFullPreview = getRecipeFullPreview;
 exports.getRecipeFullPreviewDB = getRecipeFullPreviewDB;
 exports.getRecipePreviewDB = getRecipePreviewDB;
+exports.mapRecipeCreated = mapRecipeCreated;

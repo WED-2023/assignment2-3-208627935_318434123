@@ -139,7 +139,7 @@ async function addNewRecipes(user_id, recipe) {
   const recipe_id = await getLargestRecipeId();
 
   console.log("got max id: ", recipe_id);
-  const mappedRecipe = await mappings.mapRecipe(recipe, recipe_id);
+  const mappedRecipe = await mappings.mapRecipeCreated(recipe, recipe_id, user_id);
   await addToRecipes(recipe_id, mappedRecipe);
   await addToMyRecipes(recipe_id, mappedRecipe);
   await addToLikes(recipe_id);
@@ -163,12 +163,15 @@ const getLargestRecipeId = async function () {
 
 const addToRecipes = async function (recipe_id, recipe) {
   const recipes_query = `INSERT INTO recipes (recipe_id, title, time_in_minutes, image_url, vegetarian, vegan, gluten_free, summary, instructions, servings, extendedIngredients, analyzedInstructions) 
-  VALUES (${recipe_id}, '${recipe.title}', ${recipe.time}, '${recipe.image}', ${recipe.vegetarian}, ${recipe.vegan}, ${recipe.gluten_free}, '${recipe.summary}', '${recipe.instructions}', ${recipe.servings}, '${JSON.stringify(recipe.extendedIngredients)}', '${JSON.stringify(recipe.analyzedInstructions)}')`;
+  VALUES (${recipe_id}, '${recipe.title}', ${recipe.readyInMinutes}, '${recipe.image}', ${recipe.vegetarian}, ${recipe.vegan}, ${recipe.glutenFree}, '${recipe.summary}', '${recipe.instructions}', ${recipe.servings}, '${JSON.stringify(recipe.extendedIngredients)}', '${JSON.stringify(recipe.analyzedInstructions)}')`;
   await DButils.execQuery(recipes_query);
   console.log("add to recipes");
 };
 
 const addToMyRecipes = async function (recipe_id, recipe) {
+  if(!recipe.user_name){
+    recipe.user_name = 'amitp'
+  }
   query = `INSERT INTO my_recipes (user_name, recipe_id) 
   VALUES ('${recipe.user_name}', ${recipe_id})`;
   await DButils.execQuery(query);

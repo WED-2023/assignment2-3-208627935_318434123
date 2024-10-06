@@ -64,17 +64,19 @@ router.get('/favorites/preview', async (req,res,next) => {
     next(error); 
   }
 });
+
 router.post('/createRecipe', async (req,res,next) => {
   try{
     const username = req.session.username;
     // const user_name = req.body.recipe.user_name;
-    const recipe = req.body.recipe
+    const recipe = req.body
     await user_utils.addNewRecipes(username, recipe);
     res.status(201).send("recipe added");
   } catch(error){
     next(error); 
   }
 });
+
 router.get('/MyRecipes/preview', async (req,res,next) => {
   try{
     const username = req.session.username;
@@ -85,29 +87,5 @@ router.get('/MyRecipes/preview', async (req,res,next) => {
     next(error); 
   }
 });
-// router.get('/MyRecipes/full_preview', async (req,res,next) => {
-//   try{
-//     const username = req.session.username;
-//     // const user_name = req.body.username;
-//     recipes = await user_utils.getMyRecipesFullPreview(username);
-//     res.status(200).send(recipes);
-//   } catch(error){
-//     next(error); 
-//   }
-// });
-// router.get('/favorites/full_preview', async (req,res,next) => {
-//   try{
-//     const username = req.session.username;
-//     // const user_name = req.body.username;
-//     let favorite_recipes = {};
-//     const recipes = await user_utils.getFavoriteRecipes(username, false);
-//     res.status(200).send(recipes);
-//   } catch(error){
-//     next(error); 
-//   }
-// });
-
-
-
 
 module.exports = router;
