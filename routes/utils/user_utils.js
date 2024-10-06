@@ -1,5 +1,6 @@
 const DButils = require("./DButils");
 const recipes_utils = require("./recipes_utils");
+const mappings = require("./mappings");
 
 async function how_many_favorites(recipe_id){
   const result = await DButils.execQuery(
@@ -138,12 +139,12 @@ async function addNewRecipes(user_id, recipe) {
   const recipe_id = await getLargestRecipeId();
 
   console.log("got max id: ", recipe_id);
-
-  await addToRecipes(recipe_id, recipe);
-  await addToMyRecipes(recipe_id, recipe);
-  await addIngredients(recipe_id, recipe);
+  const mappedRecipe = await mappings.mapRecipe(recipe, recipe_id);
+  await addToRecipes(recipe_id, mappedRecipe);
+  await addToMyRecipes(recipe_id, mappedRecipe);
   await addToLikes(recipe_id);
 }
+
 async function getRecipesIdsByUser(user_id) {
   console.log(user_id);
   const recipesIds = await DButils.execQuery(

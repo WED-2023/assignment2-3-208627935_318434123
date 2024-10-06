@@ -69,6 +69,60 @@ async function getRecipePreviewDB(recipeId, recipeFromDB, likesFromDB, favorite)
       };
 }
 
+export async function mapRecipe(recipe, recipeId){
+    if(!recipe.analyzedInstructions){
+        recipe.analyzedInstructions = [];
+    }   
+    recipe.extendedIngredients = await mapIngredients(recipe.extendedIngredients);
+    const { title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, instructions, analyzedInstructions, extendedIngredients, servings } = recipe;
+    return {
+        id: recipeId,
+        image: image,
+        title: title,
+        readyInMinutes: readyInMinutes,
+        aggregateLikes: aggregateLikes,
+        vegetarian: vegetarian,
+        vegan: vegan,
+        glutenFree: glutenFree, 
+        summary: recipeSummary,
+        analyzedInstructions: analyzedInstructions,
+        instructions: instructions,
+        extendedIngredients: extendedIngredients,
+        servings: servings,
+    }
+}
+
+async function mapIngredients(ingredients){
+    return ingredients.map(
+        (ingredient, index) => {
+          return {
+            id: index + 1, // Assigning a dummy id based on index
+            aisle: "", // Default empty
+            image: "", // Default empty
+            consistency: "", // Default empty
+            name: ingredient.ingredient_name,
+            nameClean: "", // Default empty
+            original: `${ingredient.amount} ${ingredient.unit} ${ingredient.ingredient_name}`,
+            originalName: ingredient.ingredient_name,
+            amount: ingredient.amount,
+            unit: ingredient.unit,
+            meta: [], // Default empty
+            measures: {
+              us: {
+                amount: ingredient.amount,
+                unitShort: ingredient.unit,
+                unitLong: "", // You can define it based on the unit
+              },
+              metric: {
+                amount: ingredient.amount,
+                unitShort: "", // You can define it based on the unit
+                unitLong: "", // You can define it based on the unit
+              },
+            },
+          };
+        }
+      );
+}
 async function mapInstructions(instructions){}
 
 exports.getRecipePreview = getRecipePreview;
