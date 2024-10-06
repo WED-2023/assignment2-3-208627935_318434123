@@ -30,11 +30,11 @@ async function getRecipeFromDB(recipe_id, isPreview) {
       `SELECT title, image_url, time_in_minutes, vegetarian, vegan, gluten_free from recipes where recipe_id='${recipe_id}'`
     );
     console.log(recipe);
-    const likes = await DButils.execQuery(
+    let likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
     console.log(likes);
-    if (!likes) {
+    if (!likes[0]) {
       likes = [{ likes: 0 }];
     }
     return mappings.getRecipePreviewDB(recipe_id, recipe[0], likes[0].likes);
@@ -44,11 +44,11 @@ async function getRecipeFromDB(recipe_id, isPreview) {
       `SELECT * from recipes where recipe_id='${recipe_id}'`
     );
     console.log(recipe);
-    const likes = await DButils.execQuery(
+    let likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
     console.log(likes);
-    if (!likes) {
+    if (!likes[0]) {
       likes = [{ likes: 0 }];
     }
 
@@ -72,7 +72,7 @@ async function getIngredientsByRecipeId(recipeId) {
   return ingredients.map((ingredient) => ({
     ingredient_name: ingredient.ingredient_name,
     amount: ingredient.amount,
-    unit: ingredient.unit,
+    metric: ingredient.unit,
   }));
 }
 
@@ -80,15 +80,15 @@ async function getRecipeDetailsById(recipe_id, isPreview) {
   const recipe_info = await getRecipeInformation(recipe_id);
   const recipeSummary = await getRecipeSummary(recipe_id);
 
-  const num_of_likes = user_utils.in_favorites(recipe_info.recipeId)
-  if (num_of_likes > 0){
-    isFavorite = true
-    recipe_info.aggregateLikes += num_of_likes
-  } 
+  // const num_of_likes = user_utils.is_favorite(recipe_info.recipeId)
+  // if (num_of_likes > 0){
+  //   isFavorite = true
+  //   recipe_info.aggregateLikes += num_of_likes
+  // } 
 
   if (isPreview) {
     const recipe = mappings.getRecipePreview(recipe_info, recipeSummary);
-    recipe.isFavorite = isFavorite;
+    // recipe.isFavorite = isFavorite;
     return recipe;
   }
 
