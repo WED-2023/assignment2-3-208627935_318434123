@@ -30,12 +30,20 @@ router.post('/toggle_favorite', async (req,res,next) => {
     
     // const user_id = req.body.username;
     const username = req.session.username;
+
+    console.log(req.body);
     const is_favorite = req.body.isFavorite;
     const recipe_id = req.body.recipe_id;
+    console.log(recipe_id);
     if (is_favorite){
-      await user_utils.markAsFavorite(username,recipe_id);
+      console.log("add to favorite");
+      ans = await user_utils.markAsFavorite(username,recipe_id);
+      if (!ans){
+        res.send(409).send("already favorite");
+      }
     }else{
-      await user_utils.delete_favorite(user_name, recipe_id);
+      console.log("delete to favorite");
+      await user_utils.delete_favorite(username, recipe_id);
     }
     res.status(200).send("The Recipe successfully saved as favorite");
     } catch(error){

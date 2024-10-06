@@ -42,7 +42,6 @@ async function getRecipesWithFavorites(user_name, searchRecipesResult) {
   }
   return searchRecipesResult
 
-  return recipes;
 }
 async function getRecipeFromDB(user_name, recipe_id, isPreview) {
   if (isPreview) {
@@ -54,12 +53,12 @@ async function getRecipeFromDB(user_name, recipe_id, isPreview) {
     let likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
-    favorite = is_favorite(user_name, recipe_id)
+    const favorite = await user_utils.is_favorite(user_name, recipe_id)
     console.log(likes);
     if (!likes[0]) {
       likes = [{ likes: 0 }];
     }
-    return mappings.getRecipePreviewDB(recipe[0], likes[0].likes, favorite);
+    return await mappings.getRecipePreviewDB(recipe[0], likes[0].likes, favorite);
   } else {
     console.log("Full Details");
     const recipe = await DButils.execQuery(

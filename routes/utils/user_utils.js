@@ -10,7 +10,7 @@ async function how_many_favorites(recipe_id){
 async function is_favorite(user_name, recipe_id){
   try {
     const result = await DButils.execQuery(
-      `SELECT * FROM favorite_recipes WHERE user_name =${user_name} AND recipe_id = ${recipe_id};`
+      `SELECT * FROM favorite_recipes WHERE user_name = '${user_name}' AND recipe_id = ${recipe_id};`
     ); 
     return result.length > 0; // Recipe exists
 
@@ -49,11 +49,18 @@ async function delete_favorite(user_name, recipe_id){
   await DButils.execQuery(query);
 }
 async function markAsFavorite(user_id, recipe_id) {
-  const exists = await checkIfRecipeExists(recipe_id);
-  api_or_not = !exists;
-  query = `INSERT INTO favorite_recipes (user_name, recipe_id, api) 
-               VALUES ('${user_id}', ${recipe_id}, ${api_or_not})`;
-  await DButils.execQuery(query);
+  
+  const already_fav =  is_favorite(user_id, recipe_id);
+  if (already_fav){
+    const exists = await checkIfRecipeExists(recipe_id);
+    api_or_not = !exists;
+    query = `INSERT INTO favorite_recipes (user_name, recipe_id, api) 
+                VALUES ('${user_id}', ${recipe_id}, ${api_or_not})`;
+      
+    await DButils.execQuery(query);
+    return true
+}
+return false
 }
 
 async function getFavoriteRecipes(user_id, fullOrPreview) {
@@ -76,7 +83,7 @@ async function getFavoriteRecipes(user_id, fullOrPreview) {
   recipesFromAPIPromises
 
   const recipesFromDBPromises = apiFalse.map((recipe) =>
-    recipes_utils.getRecipeFromDB(recipe.recipe_id, fullOrPreview)
+    recipes_utils.getRecipeFromDB(user_id, recipe.recipe_id, fullOrPreview)
   );
 
   // Wait for all promises to resolve for apiFalse
