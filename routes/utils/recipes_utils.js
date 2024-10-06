@@ -51,12 +51,12 @@ async function getRecipeFromDB(user_name, recipe_id, isPreview) {
       `SELECT title, image_url, time_in_minutes, vegetarian, vegan, gluten_free from recipes where recipe_id='${recipe_id}'`
     );
     console.log(recipe);
-    const likes = await DButils.execQuery(
+    let likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
     favorite = is_favorite(user_name, recipe_id)
     console.log(likes);
-    if (!likes) {
+    if (!likes[0]) {
       likes = [{ likes: 0 }];
     }
     return mappings.getRecipePreviewDB(recipe[0], likes[0].likes, favorite);
@@ -66,11 +66,11 @@ async function getRecipeFromDB(user_name, recipe_id, isPreview) {
       `SELECT * from recipes where recipe_id='${recipe_id}'`
     );
     console.log(recipe);
-    const likes = await DButils.execQuery(
+    let likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
     console.log(likes);
-    if (!likes) {
+    if (!likes[0]) {
       likes = [{ likes: 0 }];
     }
 
@@ -93,7 +93,7 @@ async function getIngredientsByRecipeId(recipeId) {
   return ingredients.map((ingredient) => ({
     ingredient_name: ingredient.ingredient_name,
     amount: ingredient.amount,
-    unit: ingredient.unit,
+    metric: ingredient.unit,
   }));
 }
 
