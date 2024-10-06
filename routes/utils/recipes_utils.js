@@ -74,27 +74,14 @@ async function getRecipeFromDB(user_name, recipe_id, isPreview) {
       likes = [{ likes: 0 }];
     }
 
-    // Fetch the ingredients for this recipe
-    const ingredients = await getIngredientsByRecipeId(recipe_id);
-
-    const recipeWithIngredients = await mappings.getRecipeFullPreviewDB(
+    const fullPrevRecipe = await mappings.getRecipeFullPreviewDB(
+      recipe_id,
       recipe[0],
-      ingredients,
       likes[0].likes
     );
 
-    return recipeWithIngredients;
+    return fullPrevRecipe;
   }
-}
-async function getIngredientsByRecipeId(recipeId) {
-  const ingredients = await DButils.execQuery(
-    `SELECT ingredient_name, amount, unit FROM recipes_ingredients WHERE recipe_id = ${recipeId}`
-  );
-  return ingredients.map((ingredient) => ({
-    ingredient_name: ingredient.ingredient_name,
-    amount: ingredient.amount,
-    metric: ingredient.unit,
-  }));
 }
 
 async function getRecipeDetailsById(recipe_id, isPreview) {
