@@ -23,7 +23,28 @@ const user_utils = require("./user_utils");
 /**
  * UTILS
  */
-async function getRecipeFromDB(recipe_id, isPreview) {
+async function getRecipesWithFavorites(user_name, searchRecipesResult) {
+  const recipes = [];
+
+  if (user_name) {
+      for (const recipe of searchRecipesResult) {
+          // Check DB for each recipe
+          const favorite = await user_utils.is_favorite(user_name, recipe.id);
+          const to_add = { isFavorite: favorite };
+          // Merge recipe data with favorite status
+          const mergedRecipe = {
+              ...recipe,
+              ...to_add
+          };
+          recipes.push(mergedRecipe);
+      }
+      return recipes
+  }
+  return searchRecipesResult
+
+  return recipes;
+}
+async function getRecipeFromDB(user_name, recipe_id, isPreview) {
   if (isPreview) {
     console.log("Preview");
     const recipe = await DButils.execQuery(
@@ -33,11 +54,12 @@ async function getRecipeFromDB(recipe_id, isPreview) {
     const likes = await DButils.execQuery(
       `SELECT likes from likes where recipe_id='${recipe_id}'`
     );
+    favorite = is_favorite(user_name, recipe_id)
     console.log(likes);
     if (!likes) {
       likes = [{ likes: 0 }];
     }
-    return mappings.getRecipePreviewDB(recipe_id, recipe[0], likes[0].likes);
+    return mappings.getRecipePreviewDB(recipe[0], likes[0].likes, favorite);
   } else {
     console.log("Full Details");
     const recipe = await DButils.execQuery(
@@ -56,7 +78,6 @@ async function getRecipeFromDB(recipe_id, isPreview) {
     const ingredients = await getIngredientsByRecipeId(recipe_id);
 
     const recipeWithIngredients = await mappings.getRecipeFullPreviewDB(
-      recipe_id,
       recipe[0],
       ingredients,
       likes[0].likes
@@ -80,7 +101,7 @@ async function getRecipeDetailsById(recipe_id, isPreview) {
   const recipe_info = await getRecipeInformation(recipe_id);
   const recipeSummary = await getRecipeSummary(recipe_id);
 
-  const num_of_likes = user_utils.in_favorites(recipe_info.recipeId)
+  const num_of_likes = user_utils.how_many_favorites(recipe_id)
   if (num_of_likes > 0){
     isFavorite = true
     recipe_info.aggregateLikes += num_of_likes
@@ -88,7 +109,6 @@ async function getRecipeDetailsById(recipe_id, isPreview) {
 
   if (isPreview) {
     const recipe = mappings.getRecipePreview(recipe_info, recipeSummary);
-    recipe.isFavorite = isFavorite;
     return recipe;
   }
 
@@ -190,3 +210,4 @@ exports.getRecipeDetailsById = getRecipeDetailsById;
 exports.getRandomRecipes = getRandomRecipes;
 exports.getRandomPreviews = getRandomPreviews;
 exports.getRecipeFromDB = getRecipeFromDB;
+exports.getRecipesWithFavorites = getRecipesWithFavorites;

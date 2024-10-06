@@ -50,7 +50,6 @@ router.get('/favorites/preview', async (req,res,next) => {
   try{
     const username = req.session.username;
     // const user_name = req.body.username;
-    let favorite_recipes = {};
     const recipes = await user_utils.getFavoriteRecipes(username, true);
     res.status(200).send(recipes);
   } catch(error){

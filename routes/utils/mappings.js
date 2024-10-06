@@ -54,7 +54,7 @@ async function getRecipeFullPreviewDB(recipeId, recipeFromDB, ingredientsFromDB,
     }
 }
 
-async function getRecipePreviewDB(recipeId, recipeFromDB, likesFromDB) {
+async function getRecipePreviewDB(recipeId, recipeFromDB, likesFromDB, is_favorite) {
     const { title, time_in_minutes, image_url, vegan, vegetarian, gluten_free} = recipeFromDB;
     return {
         id: recipeId,
@@ -65,6 +65,7 @@ async function getRecipePreviewDB(recipeId, recipeFromDB, likesFromDB) {
         vegetarian: vegetarian,
         vegan: vegan,
         glutenFree: gluten_free,
+        isFavorite: is_favorite,
       };
 }
 

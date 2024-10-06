@@ -57,7 +57,7 @@ async function markAsFavorite(user_id, recipe_id) {
 }
 
 async function getFavoriteRecipes(user_id, fullOrPreview) {
-  let recipes = [];
+
   console.log(
     `SELECT recipe_id, api from favorite_recipes where user_name='${user_id}'`
   );
@@ -72,6 +72,8 @@ async function getFavoriteRecipes(user_id, fullOrPreview) {
   const recipesFromAPIPromises = apiTrue.map((recipe) =>
     recipes_utils.getRecipeDetailsById(recipe.recipe_id, fullOrPreview)
   );
+  
+  recipesFromAPIPromises
 
   const recipesFromDBPromises = apiFalse.map((recipe) =>
     recipes_utils.getRecipeFromDB(recipe.recipe_id, fullOrPreview)
@@ -80,9 +82,17 @@ async function getFavoriteRecipes(user_id, fullOrPreview) {
   // Wait for all promises to resolve for apiFalse
   const recipesFromDB = await Promise.all(recipesFromDBPromises);
   const recipesFromAPI = await Promise.all(recipesFromAPIPromises);
-  console.log("recipes from db", recipesFromDB);
+  const to_add = {isFavorite: true}
+  apiRecipes = []
+  for (const recipe of recipesFromAPI) {
+    const mergedRecipe = {
+      ...recipe,
+      ...to_add
+    };
+    apiRecipes.push(mergedRecipe)
+  }
 
-  const allRecipes = [...recipesFromDB, ...recipesFromAPI];
+  const allRecipes = [...recipesFromDB, ...apiRecipes];
   return allRecipes;
 }
 async function getMyRecipesFullPreview(user_id) {
