@@ -125,7 +125,7 @@ async function getMyRecipesPreview(user_id) {
     const recipeId = row.recipe_id;
 
     // Fetch each recipe and await the result
-    const recipe = await recipes_utils.getRecipeFromDB(recipeId, true);
+    const recipe = await recipes_utils.getRecipeFromDB(user_id, recipeId, true);
     recipes.push(recipe);
   }
   console.log("all recipes: ", recipes);

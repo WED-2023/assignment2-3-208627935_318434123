@@ -58,7 +58,8 @@ async function getRecipeFromDB(user_name, recipe_id, isPreview) {
     if (!likes[0]) {
       likes = [{ likes: 0 }];
     }
-    return await mappings.getRecipePreviewDB(recipe[0], likes[0].likes, favorite);
+    const previewRecipe = await mappings.getRecipePreviewDB(recipe_id, recipe[0], likes[0].likes, favorite);
+    return previewRecipe;
   } else {
     console.log("Full Details");
     const recipe = await DButils.execQuery(

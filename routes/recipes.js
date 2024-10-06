@@ -48,7 +48,7 @@ router.get("/full_preview", async (req, res, next) => {
       recipeFullPreview = await recipes_utils.getRecipeDetailsById(recipe_id, false);
     }
     else{
-      recipeFullPreview = await recipes_utils.getRecipeFromDB(recipe_id, false)
+      recipeFullPreview = await recipes_utils.getRecipeFromDB(req.session.username, recipe_id, false)
     }
     res.status(200).send(recipeFullPreview);
   } catch (error) {
