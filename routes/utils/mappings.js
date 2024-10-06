@@ -39,14 +39,14 @@ async function getRecipeFullPreviewDB(recipeId, recipeFromDB, ingredientsFromDB,
     const { title, time_in_minutes, image_url, vegan, vegetarian, gluten_free, instructions, servings } = recipeFromDB;
     const analyzedInstructions = await mapInstructions(instructions);
     return {
-        id: recipeId,
+        id: parseInt(recipeId),
         image: image_url,
         title: title,
         readyInMinutes: time_in_minutes,
         aggregateLikes: likesFromDB,
-        vegetarian: vegetarian,
-        vegan: vegan,
-        glutenFree: gluten_free, 
+        vegetarian: vegetarian === 1 ? true : false,
+        vegan: vegan === 1 ? true : false,
+        glutenFree: gluten_free === 1 ? true : false, 
         instructions: instructions,
         analyzedInstructions: [],
         extendedIngredients: ingredientsFromDB,
@@ -57,14 +57,14 @@ async function getRecipeFullPreviewDB(recipeId, recipeFromDB, ingredientsFromDB,
 async function getRecipePreviewDB(recipeId, recipeFromDB, likesFromDB) {
     const { title, time_in_minutes, image_url, vegan, vegetarian, gluten_free} = recipeFromDB;
     return {
-        id: recipeId,
+        id: parseInt(recipeId),
         image: image_url,
         title: title,
         readyInMinutes: time_in_minutes,
         aggregateLikes: likesFromDB,
-        vegetarian: vegetarian,
-        vegan: vegan,
-        glutenFree: gluten_free,
+        vegetarian: vegetarian === 1 ? true : false,
+        vegan: vegan === 1 ? true : false,
+        glutenFree: gluten_free === 1 ? true : false,
       };
 }
 
