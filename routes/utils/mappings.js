@@ -36,6 +36,12 @@ async function getRecipeFullPreview(recipeInfo, recipeSummary) {
 }
 
 async function getRecipeFullPreviewDB(recipeId, recipeFromDB, likesFromDB) {
+    if(!recipeFromDB.analyzedInstructions){
+        recipeFromDB.analyzedInstructions = JSON.stringify([]);
+    }
+    if(!recipeFromDB.extendedIngredients){
+        recipeFromDB.extendedIngredients = JSON.stringify([]);
+    }
     const { title, time_in_minutes, image_url, vegan, vegetarian, gluten_free, instructions, servings, extendedIngredients, analyzedInstructions } = recipeFromDB;
     const _analyzedInstructions = await mapInstructions(instructions);
     return {
